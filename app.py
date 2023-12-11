@@ -72,10 +72,13 @@ def create_cupcake():
 
     return (jsonify(cupcake=serialized), 201)
 
+
 @app.patch("/api/cupcakes/<int:cupcake_id>")
 def update_cupcake(cupcake_id):
     """
-    Returns updated data about the cupcake or raise a 404 error if cupcake not found
+    Pass in JSON: {flavor, size, rating, image_ur}, but not necessary for all
+    Returns updated data about the cupcake or raise a 404 error if cupcake not
+    found
 
     Returns JSON:{cupcake: {id, flavor, size, rating, image_url}}.
     """
@@ -86,17 +89,22 @@ def update_cupcake(cupcake_id):
     cupcake.flavor=request.json.get("flavor", cupcake.flavor)
     cupcake.size=request.json.get("size", cupcake.size)
     cupcake.rating=request.json.get("rating", cupcake.rating)
-    cupcake.image_url=request.json.get("image_url" or cupcake.image_url)
+
+    cupcake.image_url = (
+        request.json['image_url'] if request.json['image_url']
+        else DEFAULT_IMAGE_URL)
+
 
     db.session.commit()
 
     return jsonify(cupcake=cupcake.serialize())
 
+
 @app.delete("/api/cupcakes/<int:cupcake_id>")
 def delete_cupcake(cupcake_id):
     """
-    Deletes the specific cupcake instance with the ID matching the one in the URL
-    or return 404 error if not found.
+    Deletes the specific cupcake instance with the ID matching the one in the
+    URL or return 404 error if not found.
 
     Returns JSON: {deleted: [cupcake-id]}
     """

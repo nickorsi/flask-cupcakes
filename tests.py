@@ -5,7 +5,7 @@ os.environ["DATABASE_URL"] = 'postgresql:///cupcakes_test'
 from unittest import TestCase
 
 from app import app
-from models import db, Cupcake
+from models import db, Cupcake, DEFAULT_IMAGE_URL
 
 # Make Flask errors be real errors, rather than HTML pages with error info
 app.config['TESTING'] = True
@@ -27,6 +27,16 @@ CUPCAKE_DATA_2 = {
     "image_url": "http://test.com/cupcake2.jpg"
 }
 
+CUPCAKE_UPDATED_DATA = {
+            "flavor": "UpdatedFlavor",
+            "size": "UpdatedSize",
+            "image_url": "http://test.com/updatedcupcake.jpg"
+        }
+
+CUPCAKE_UPDATED_DATA_2 = {
+            "flavor":"UpdatedFlavor2",
+            "image_url": ""
+        }
 
 class CupcakeViewsTestCase(TestCase):
     """Tests for views of API."""
@@ -116,11 +126,7 @@ class CupcakeViewsTestCase(TestCase):
     def test_update_cupcake(self):
         """Tests if a cupcake instance is updated upon a PATCH method"""
 
-        CUPCAKE_UPDATED_DATA = {
-            "flavor": "UpdatedFlavor",
-            "size": "UpdatedSize",
-            "image_url": "http://test.com/updatedcupcake.jpg"
-        }
+        cupcake_start_count = Cupcake.query.count()
 
         with app.test_client() as client:
             url = f"/api/cupcakes/{self.cupcake_id}"
@@ -137,6 +143,31 @@ class CupcakeViewsTestCase(TestCase):
                     "image_url": "http://test.com/updatedcupcake.jpg"
                 }
             })
+            self.assertEqual(Cupcake.query.count(), cupcake_start_count)
+
+
+    def test_update_cupcake_empty_string(self):
+        """
+        Tests if a cupcake instance is updated correctly upon a PATCH method
+        with an empty string for URL
+        """
+
+        with app.test_client() as client:
+            url = f"/api/cupcakes/{self.cupcake_id}"
+            resp = client.patch(url, json=CUPCAKE_UPDATED_DATA_2)
+
+            self.assertEqual(resp.status_code, 200)
+            data = resp.json
+            self.assertEqual(data, {
+                "cupcake": {
+                    "id": self.cupcake_id,
+                    "flavor": "UpdatedFlavor2",
+                    "size": "TestSize",
+                    "rating": 5,
+                    "image_url": DEFAULT_IMAGE_URL
+                }
+            })
+
 
     def test_delete_cupcake(self):
         """Tests if a cupcake instance is deleted upon a DELETE method"""
