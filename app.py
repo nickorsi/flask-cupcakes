@@ -92,10 +92,10 @@ def update_cupcake(cupcake_id):
     cupcake = Cupcake.query.get_or_404(cupcake_id)
 
 
-    cupcake.flavor=request.json["flavor"]
-    cupcake.size=request.json["size"]
-    cupcake.rating=request.json["rating"]
-    cupcake.image_url=request.json["image_url"] or DEFAULT_IMAGE_URL
+    cupcake.flavor=request.json.get("flavor", cupcake.flavor)
+    cupcake.size=request.json.get("size", cupcake.size)
+    cupcake.rating=request.json.get("rating", cupcake.rating)
+    cupcake.image_url=request.json.get("image_url" or cupcake.image_url)
 
     db.session.commit()
 
