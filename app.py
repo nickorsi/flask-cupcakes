@@ -30,7 +30,7 @@ def list_cupcakes():
 
     Returns JSON:{cupcakes: [{id, flavor, size, rating, image_url}, ...]}.
     """
-    # TODO: Could combine the below into one line
+
     cupcakes = Cupcake.query.all()
     serialized = [cupcake.serialize() for cupcake in cupcakes]
 
@@ -43,7 +43,7 @@ def get_cupcake(cupcake_id):
 
     Returns JSON:{cupcakes: {id, flavor, size, rating, image_url}}.
     """
-    # TODO: Could combine the below into one line
+
     cupcake = Cupcake.query.get_or_404(cupcake_id)
     serialized = cupcake.serialize()
 
@@ -57,26 +57,17 @@ def create_cupcake():
 
     Returns JSON:{cupcakes: {id, flavor, size, rating, image_url}}.
     """
-    # TODO: Could make request.jsnn a variable to make it easier to read
-    flavor = request.json["flavor"]
-    size = request.json["size"]
-    rating = request.json["rating"]
-    #Whats the best way to import default_image
-    # TODO: Make reque.json['image_url'] or None
-    # image_url = request.json.get("image_url", DEFAULT_IMAGE_URL)
-    image_url = request.json["image_url"] or None
-    # TODO: Combine lines 61 to 69 in one, define the variable below with request.json
+
     new_cupcake = Cupcake(
-        flavor=flavor,
-        size=size,
-        rating=rating,
-        image_url=image_url
+        flavor=request.json["flavor"],
+        size=request.json["size"],
+        rating=request.json["rating"],
+        image_url=request.json["image_url"] or None
     )
 
     db.session.add(new_cupcake)
     db.session.commit()
 
-    # TODO: Could combine the 79 and 82 into one line
     serialized = new_cupcake.serialize()
 
     return (jsonify(cupcake=serialized), 201)
