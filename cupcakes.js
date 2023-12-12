@@ -50,11 +50,7 @@ async function getAndSubmitCupcake(evt) {
   const rating = $("#rating").val();
   const url = $("#submit-url").val();
 
-  // grab current user
-  console.log("whatIsUser=", currentUser);
-  console.log("currentStory=", currentUser, { title, author, url });
-
-  const currentStory = await storyList.addStory(
+  const currentCupcake = await storyList.addStory(
     currentUser,
     { title, author, url }
   );
