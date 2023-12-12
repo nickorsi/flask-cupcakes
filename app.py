@@ -59,10 +59,12 @@ def create_cupcake():
     """
 
     new_cupcake = Cupcake(
-        flavor=request.json["flavor"],
-        size=request.json["size"],
-        rating=request.json["rating"],
-        image_url=request.json["image_url"] or None
+        flavor = request.json["flavor"],
+        size = request.json["size"],
+        rating = request.json["rating"],
+        image_url = (
+        request.json['image_url'] if request.json['image_url']
+        else DEFAULT_IMAGE_URL)
     )
 
     db.session.add(new_cupcake)

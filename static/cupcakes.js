@@ -3,7 +3,7 @@
 const $cupcakeList = $("#cupcake-list");
 const $cupcakeForm = $("#create-cupcake-form");
 
-const BASE_URL = "localhost:5001"
+const BASE_URL = "http://localhost:5001"
 
 
 /** Given a cupcake, creates markup to be appended to DOM.
@@ -28,7 +28,7 @@ function generateCupcakeMarkup(cupcake) {
  *
  * A cupcake is {id, flavor, size, rating, image-url}
  * */
-
+// TODO: Make append to UL element not div
 function putCupcakesOnPage(cupcakes) {
   $cupcakeList.empty();
 
@@ -60,15 +60,18 @@ async function getCupcakes() {
 /** Handle cupcake form submission, if form has valid inputs - flavor, rating,
  * size, image-url, it will POST cupcake and add it to the cupcakes' list. */
 
+// TODO: Clear out the values in the form once the form is submitted
+// TODO: Update docstring, is this really validating inputs? Also is the name
+// "get" really what's happening? We are creating a cupcake
 async function getAndSubmitCupcake(evt) {
   evt.preventDefault();
 
   const flavor = $("#flavor").val();
   const size = $("#size").val();
   const rating = $("#rating").val();
-  const image_url = $("#submit-url").val();
+  const image_url = $("#image-url").val();
 
-  console.log("HERE")
+  console.log("HERE", flavor, size, rating, image_url)
 
   const response = await fetch(
     `/api/cupcakes`,
@@ -83,7 +86,7 @@ async function getAndSubmitCupcake(evt) {
 
   const newCupcake = await response.json();
 
-  const $cupcake = generateStoryMarkup(newCupcake.cupcake);
+  const $cupcake = generateCupcakeMarkup(newCupcake.cupcake);
   $cupcakeList.prepend($cupcake);
 }
 
