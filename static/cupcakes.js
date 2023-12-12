@@ -2,10 +2,14 @@
 
 const $cupcakeList = $("#cupcake-list");
 const $cupcakeForm = $("#create-cupcake-form");
-const $submitButton = $("#cupcake-submit");
 
 const BASE_URL = "localhost:5001"
 
+
+/** Given a cupcake, creates markup to be appended to DOM.
+ *
+ * A cupcake is {id, flavor, size, rating, image-url}
+ * */
 
 function generateCupcakeMarkup(cupcake) {
 
@@ -19,6 +23,12 @@ function generateCupcakeMarkup(cupcake) {
     `);
 }
 
+/** Given list of cupcakes, create markup for each and appends to DOM by
+ *  populating #cupcakesList. Clears cupcake list first
+ *
+ * A cupcake is {id, flavor, size, rating, image-url}
+ * */
+
 function putCupcakesOnPage(cupcakes) {
   $cupcakeList.empty();
 
@@ -29,43 +39,62 @@ function putCupcakesOnPage(cupcakes) {
   }
 }
 
-
-
-//Create event listener on create cupcake button
-//create evnet listener on each cupcake to delete
-
-
-
-/** Handle story form submission, if form has valid inputs - author, title, url,
- * and currentUser, it will call addStory and add it to the stories' list. */
-
-// async function getAndSubmitCupcake(evt) {
-//   console.debug("getStorySubmission=", evt);
-//   evt.preventDefault();
-
-//   const flavor = $("#flavor").val();
-//   const size = $("#size").val();
-//   const rating = $("#rating").val();
-//   const url = $("#submit-url").val();
-
-//   const currentCupcakes = await getCupcakes()
-
-//   const $story = generateCupcakeMarkup(currentStory);
-//   $allStoriesList.prepend($story);
-
-// }
+/** Queries a GET request to API and returns (promise) array of cupcake objects
+ *
+ * Returns (promise): {cupcakes: [{id, flavor, size, rating, image_url}, ...]}.
+ */
 
 async function getCupcakes() {
-    const response = await fetch(
-      `/api/cupcakes`,
-      {
-        method: "GET"
-      });
+  //TODO:Why we don't need Base
+  const response = await fetch(
+    `/api/cupcakes`,
+    {
+      method: "GET"
+    });
 
-    const cupcakes = await response.json();
+  const cupcakes = await response.json();
 
-    return cupcakes;
+  return cupcakes;
 }
+
+/** Handle cupcake form submission, if form has valid inputs - flavor, rating,
+ * size, image-url, it will POST cupcake and add it to the cupcakes' list. */
+
+async function getAndSubmitCupcake(evt) {
+  evt.preventDefault();
+
+  const flavor = $("#flavor").val();
+  const size = $("#size").val();
+  const rating = $("#rating").val();
+  const image_url = $("#submit-url").val();
+
+  console.log("HERE")
+
+  const response = await fetch(
+    `/api/cupcakes`,
+    {
+      method: "POST",
+      body: JSON.stringify({flavor:flavor, size:size, rating:rating,
+         image_url:image_url}),
+      headers: {"Content-Type":  "application/json"},
+    });
+
+  console.log("NOT HERE")
+
+  const newCupcake = await response.json();
+
+  const $cupcake = generateStoryMarkup(newCupcake.cupcake);
+  $cupcakeList.prepend($cupcake);
+}
+
+
+// Once form is submitted, calls getAndSubmitCupcake to POST to API and append
+// to DOM
+
+$cupcakeForm.on("submit", getAndSubmitCupcake);
+
+
+/** Starts the homepage and calls getCupcake to populate the DOM */
 
 async function start() {
   const cupcakes = await getCupcakes();
@@ -74,4 +103,4 @@ async function start() {
 
 start()
 
-// $submitForm.on("submit", getAndSubmitStory);
+
